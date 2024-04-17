@@ -16,12 +16,10 @@ require 'rspec/openapi/extractors'
 require 'rspec/openapi/extractors/rack'
 
 if ENV['OPENAPI']
-  DEBUG_ENABLED = ['', '1', 'true'].include?(ENV['DEBUG']&.downcase)
-
   begin
     require 'hanami'
   rescue LoadError
-    warn 'Hanami not detected' if DEBUG_ENABLED
+    warn 'Hanami not detected' if RSpec::OpenAPI.debug_enabled?
   else
     require 'rspec/openapi/extractors/hanami'
   end
@@ -29,7 +27,7 @@ if ENV['OPENAPI']
   begin
     require 'rails'
   rescue LoadError
-    warn 'Rails not detected' if DEBUG_ENABLED
+    warn 'Rails not detected' if RSpec::OpenAPI.debug_enabled?
   else
     require 'rspec/openapi/extractors/rails'
   end
@@ -82,5 +80,9 @@ module RSpec::OpenAPI
                   :post_process_hook
 
     attr_reader   :config_filename
+
+    def debug_enabled?
+      ['', '1', 'true'].include?(ENV['DEBUG']&.downcase)
+    end
   end
 end
